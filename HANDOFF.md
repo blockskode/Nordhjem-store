@@ -22,6 +22,16 @@ reference solution kept apart. Before that, plumbing the search needs:
 a loader that puts products into Firestore with 768-number embeddings
 (`gemini-embedding-001`, `RETRIEVAL_DOCUMENT`) and a vector index.
 
+**Reminder for the owner (asked to be reminded):** before the owner's
+search can run on the live site, the Cloud Run service account
+`nordhjem-api@nordhjemstore.iam.gserviceaccount.com` needs
+`roles/datastore.user` and `roles/aiplatform.user` on `nordhjemstore`
+(the owner runs the grant; it is blocked for Claude), then redeploy.
+
+Step 1 status: learn PDF, `check.py`, `solution.py` (passes: meaning
+1.00 / 0.99, language 1.00 / 0.96) are in `steps/01_embeddings/`; the
+owner is filling the TODOs in `api/search.py`, guided step by step.
+
 Offered, not decided: mix categories in the browse order (now by
 product ID, so the first pages are all mattresses). The architecture
 PDF was postponed by the owner ("the diagrams are enough for now").
