@@ -14,38 +14,18 @@ search, so those come first and as deep as possible.
 
 ## Start here (the exact next action)
 
-**Set up the Firebase project `nordhjemstore`.** Claude may do this
-(it is plumbing, see "How the owner works"). Steps:
-
-1. Check the gcloud and Firebase CLIs are installed and logged in as
-   the owner's Google account (`gcloud auth list`, `firebase login:list`).
-   If a login is needed, the owner runs it (suggest `! <command>`).
-2. Link billing (Blaze plan): billing account "My Billing Account",
-   `01052B-B86D92-F7FC72`, currency DKK. It already holds the earlier
-   project `jysk-store-assistant-1110`; a billing account allows about 5
-   projects. Ask before linking.
-3. Turn on the APIs in `nordhjemstore`: Vertex AI (`aiplatform`),
-   Firestore, Cloud Storage, Cloud Run, Cloud Build, Artifact Registry,
-   BigQuery, Discovery Engine (ranking), Cloud Trace, Logging,
-   Monitoring, Billing Budgets.
-4. Budget alert on `nordhjemstore` in DKK (the earlier project used
-   200 DKK; ask the owner for the amount), emails at 50, 90, 100 percent.
-5. Application Default Credentials: quota project set to
-   `nordhjemstore` (`gcloud auth application-default set-quota-project
-   nordhjemstore`), and the owner's account has `roles/aiplatform.user`.
-6. Prove it works with one embedding call and one Gemini call from
-   Python against `nordhjemstore` (models below). Note any model that
-   is not available to the new project.
-7. Firebase: create Firestore (Native mode, region `europe-west1`),
-   Storage, Hosting. Do not deploy anything public yet: security rules
-   come first.
-8. Update the "GCP and Firebase facts" section of `PLAN.md` with what
-   was found, update this file, commit and push.
-
-Then **Phase 1** (`PLAN.md`, Step 1): the store page and product
-search. The owner writes the search; Claude writes the learn PDF, the
+**Phase 1** (`PLAN.md`, Step 1): the store page and product search.
+The owner writes the search; Claude writes the learn PDF, the
 exercise skeleton, the check script and a reference solution, and
 builds the web shell around the owner's code.
+
+Done on 2026-11-12 (setup of `nordhjemstore`, all facts in `PLAN.md`,
+"GCP and Firebase facts"): billing linked, 200 DKK budget alert,
+APIs on, ADC quota project set, embedding and Gemini calls checked,
+Firestore (Native, `europe-west1`) and the Storage bucket created,
+Hosting site exists with nothing deployed. No security rules are
+published yet (so all browser access is refused); write them before
+the first deploy. Not checked yet: the image model on this project.
 
 ## How the owner works (important)
 

@@ -94,6 +94,30 @@ its AI live in one project. That needs the Blaze (pay as you go) plan
 linked to billing, the APIs below turned on there, and a budget alert.
 The earlier project below then stays only as a reference.
 
+**`nordhjemstore`, set up 2026-11-12:**
+
+- Project number 757427498119. Billed to "My Billing Account"
+  (01052B-B86D92-F7FC72, DKK); the 5th project on that account.
+- Budget alert "Nordhjem store": 200 DKK, emails at 50, 90 and 100
+  percent.
+- APIs on: Vertex AI, Firestore, Cloud Storage, Cloud Run, Cloud
+  Build, Artifact Registry, BigQuery, Discovery Engine (ranking),
+  Trace, Logging, Monitoring, Billing Budgets, Firebase Storage,
+  Firebase Hosting, Firebase Rules.
+- Login: ADC with quota project `nordhjemstore`. The owner's account
+  has `roles/owner`, which includes the Vertex AI permissions (adding
+  `roles/aiplatform.user` separately was not needed).
+- Models checked on this project: `gemini-embedding-001` in
+  `europe-west1` works (3072 numbers, length 1.0);
+  `gemini-3-flash-preview` in `global` works; `gemini-2.5-flash`
+  gives 404. The image model is not checked yet.
+- Firestore: database `(default)`, Native mode, `europe-west1`.
+- Storage: bucket `nordhjemstore.firebasestorage.app`, `EUROPE-WEST1`.
+- Hosting: site `nordhjemstore` (https://nordhjemstore.web.app),
+  nothing deployed.
+- Security rules: none published yet, so all browser access to
+  Firestore and Storage is refused. Rules come before any deploy.
+
 Earlier GCP project (set up 2026-11-10, used for the data):
 
 - Project `jysk-store-assistant-1110`, billed to "My Billing Account"
