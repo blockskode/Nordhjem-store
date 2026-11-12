@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Product photos are public (the page loads them with <img>).
+// Everything else is closed to the browser.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /product-images/{file} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

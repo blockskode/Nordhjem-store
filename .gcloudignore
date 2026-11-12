@@ -1,0 +1,11 @@
+# Only what the Dockerfile needs is sent to Cloud Build.
+*
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!api/
+!api/**
+!data/
+!data/products.jsonl
+!data/product_images.json
+api/__pycache__/
