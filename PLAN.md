@@ -274,7 +274,10 @@ much ties up money, too little loses sales.
   photos in **Cloud Storage for Firebase**; the AI parts (search, RAG,
   agent, forecast) as a Python service on **Cloud Run**, reached from
   the page through a Firebase Hosting rewrite (so `/api/...` on the
-  same site goes to Cloud Run). **Hypothesis to confirm:** colours
+  same site goes to Cloud Run). **Confirmed 2026-11-12:** the front
+  end is written in **React**. **Hypothesis to confirm:** built with
+  Vite into static files that Firebase Hosting serves; JavaScript or
+  TypeScript still open. **Hypothesis to confirm:** colours
   and look, chosen from rendered options.
 - Later option: multimodal embeddings (image and text in one space)
   for "find products like this photo".

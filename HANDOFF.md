@@ -114,6 +114,8 @@ with filters).
 - Fictional brand Nordhjem; no JYSK name, logo or look.
 - Phase 4 (GNN) is to be discussed later. First idea: weekly demand
   forecast reusing `~/semcon/gnn` (`src/models/gnn_base.py`).
+- Front end in **React** (owner, 2026-11-12). Build tool (Vite
+  assumed) and JavaScript vs TypeScript still to confirm.
 - Open: colours and look of the site.
 
 ## Things to know
