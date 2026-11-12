@@ -114,9 +114,10 @@ The earlier project below then stays only as a reference.
 - Firestore: database `(default)`, Native mode, `europe-west1`.
 - Storage: bucket `nordhjemstore.firebasestorage.app`, `EUROPE-WEST1`.
 - Hosting: site `nordhjemstore` (https://nordhjemstore.web.app),
-  nothing deployed.
-- Security rules: none published yet, so all browser access to
-  Firestore and Storage is refused. Rules come before any deploy.
+  store front live since 2026-11-12; `/api/**` forwarded to Cloud
+  Run service `nordhjem-api` (europe-west1).
+- Security rules (live): Firestore denies all browser access;
+  Storage allows public read of `product-images/` only.
 
 Earlier GCP project (set up 2026-11-10, used for the data):
 
@@ -275,10 +276,9 @@ much ties up money, too little loses sales.
   agent, forecast) as a Python service on **Cloud Run**, reached from
   the page through a Firebase Hosting rewrite (so `/api/...` on the
   same site goes to Cloud Run). **Confirmed 2026-11-12:** the front
-  end is written in **React**. **Hypothesis to confirm:** built with
-  Vite into static files that Firebase Hosting serves; JavaScript or
-  TypeScript still open. **Hypothesis to confirm:** colours
-  and look, chosen from rendered options.
+  end is **React + TypeScript**, built with Vite into static files
+  that Firebase Hosting serves. Look: "Linen and terracotta", chosen
+  from 7 rendered options.
 - Later option: multimodal embeddings (image and text in one space)
   for "find products like this photo".
 

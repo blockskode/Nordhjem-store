@@ -14,18 +14,50 @@ search, so those come first and as deep as possible.
 
 ## Start here (the exact next action)
 
-**Phase 1** (`PLAN.md`, Step 1): the store page and product search.
-The owner writes the search; Claude writes the learn PDF, the
-exercise skeleton, the check script and a reference solution, and
-builds the web shell around the owner's code.
+**Phase 1, Step 1 exercise** (`PLAN.md`, Step 1): the owner writes the
+semantic search in `api/search.py` (stub raises `NotImplementedError`).
+Claude prepares `steps/01_embeddings/`: learn PDF, check script
+(hit@5, precision@5 on `data/eval/product_queries.json`) and a
+reference solution kept apart. Before that, plumbing the search needs:
+a loader that puts products into Firestore with 768-number embeddings
+(`gemini-embedding-001`, `RETRIEVAL_DOCUMENT`) and a vector index.
 
-Done on 2026-11-12 (setup of `nordhjemstore`, all facts in `PLAN.md`,
-"GCP and Firebase facts"): billing linked, 200 DKK budget alert,
-APIs on, ADC quota project set, embedding and Gemini calls checked,
-Firestore (Native, `europe-west1`) and the Storage bucket created,
-Hosting site exists with nothing deployed. No security rules are
-published yet (so all browser access is refused); write them before
-the first deploy. Not checked yet: the image model on this project.
+Offered, not decided: mix categories in the browse order (now by
+product ID, so the first pages are all mattresses). The architecture
+PDF was postponed by the owner ("the diagrams are enough for now").
+
+### Live now (2026-11-12)
+
+- Site: https://nordhjemstore.web.app (React + TypeScript + Vite in
+  `web/`, look "Linen and terracotta": bg `#F6F1EA`, ink `#2E2622`,
+  accent `#B5583A`). Browse 24 at a time with "Show more", category
+  chips, max price, sticky search bar, search kept in `?q=`.
+- API: Cloud Run `nordhjem-api` (europe-west1, max 3 instances,
+  public, service account `nordhjem-api@` with no roles yet),
+  https://nordhjem-api-757427498119.europe-west1.run.app. Routes:
+  `GET /api/health`, `POST /api/search`, `GET /api/products`
+  (browse), `GET /api/products/{id}`. Products are read from
+  `data/products.jsonl` baked into the container (Firestore comes
+  with the search step). Until `api/search.py` works, a keyword
+  search answers and the page says "keyword placeholder".
+- Photos: 125 in `gs://nordhjemstore.firebasestorage.app/product-images/`.
+- Rules: Firestore denies all browser access; Storage allows public
+  read of `product-images/` only.
+- Architecture diagrams: `docs/diagrams/` (TikZ source, PDF, PNG):
+  overview v5, search flow, RAG flow, agent, data model.
+
+### How to run and deploy
+
+- Local: `uv run uvicorn api.app:app --reload --port 8000` (repo
+  root) and `npm run dev` in `web/` (Vite forwards /api and /images).
+- API: the `gcloud run deploy nordhjem-api --source . ...` command
+  with `--allow-unauthenticated` is blocked for Claude by the
+  permission check; the owner runs it (full command in git history
+  of this file's commit, or: region europe-west1, service account
+  above, `--max-instances 3 --memory 512Mi`, env
+  `IMAGE_URL_TEMPLATE=https://firebasestorage.googleapis.com/v0/b/nordhjemstore.firebasestorage.app/o/product-images%2F{file}?alt=media`).
+- Page: `npm run build` in `web/`, then `firebase deploy --only hosting`.
+- Rules: `firebase deploy --only firestore:rules,storage`.
 
 ## How the owner works (important)
 
@@ -114,9 +146,10 @@ with filters).
 - Fictional brand Nordhjem; no JYSK name, logo or look.
 - Phase 4 (GNN) is to be discussed later. First idea: weekly demand
   forecast reusing `~/semcon/gnn` (`src/models/gnn_base.py`).
-- Front end in **React** (owner, 2026-11-12). Build tool (Vite
-  assumed) and JavaScript vs TypeScript still to confirm.
-- Open: colours and look of the site.
+- Front end: React + TypeScript + Vite (owner, 2026-11-12).
+- Look: "Linen and terracotta" (owner chose variant 3 of 7).
+- Diagram style: no orange bar on the hub; right-angle arrows;
+  cylinders for data stores.
 
 ## Things to know
 
