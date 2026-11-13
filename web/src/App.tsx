@@ -4,7 +4,8 @@ import { ExplainPanel } from './components/ExplainPanel'
 import { Filters } from './components/Filters'
 import { ProductCard } from './components/ProductCard'
 import { SearchBar } from './components/SearchBar'
-import type { Category, ProductHit } from './types'
+import { CATEGORY_LABELS, formatPrice } from './format'
+import type { Category, ProductHit, SearchResponse } from './types'
 
 const PAGE_SIZE = 24
 const MAX_SEARCH_RESULTS = 96
@@ -22,6 +23,23 @@ interface SearchInfo {
   engine: string
   tookMs: number
   asked: number
+  fromWords: string[] // filters read from the words, not clicked
+}
+
+/** Describe the filters the API read from the words (not clicked). */
+function filtersFromWords(
+  applied: SearchResponse['filters'],
+  clickedCategory?: Category,
+  clickedPrice?: number,
+): string[] {
+  const found: string[] = []
+  if (applied.category && clickedCategory === undefined) {
+    found.push(CATEGORY_LABELS[applied.category])
+  }
+  if (applied.max_price && clickedPrice === undefined) {
+    found.push(`up to ${formatPrice(applied.max_price)}`)
+  }
+  return found
 }
 
 const EXPLAIN_KEY = 'nordhjem-explain'
@@ -89,7 +107,12 @@ export default function App() {
         query: q, category: c, max_price: p, k: asked,
       })
       setProducts(reply.results)
-      setSearchInfo({ engine: reply.engine, tookMs: reply.took_ms, asked })
+      setSearchInfo({
+        engine: reply.engine,
+        tookMs: reply.took_ms,
+        asked,
+        fromWords: filtersFromWords(reply.filters, c, p),
+      })
       setStatus('done')
     } catch {
       setStatus('error')
@@ -206,6 +229,14 @@ export default function App() {
           {searchInfo ? (
             <span>
               {products.length} results for "{query}" · {searchInfo.tookMs} ms ·{' '}
+              {searchInfo.fromWords.length > 0 && (
+                <>
+                  <span className="from-words" title="Filters read from your words">
+                    filtered by your words: {searchInfo.fromWords.join(', ')}
+                  </span>{' '}
+                  ·{' '}
+                </>
+              )}
               <button className="link" onClick={() => browse(category, maxPrice)}>
                 Clear search
               </button>

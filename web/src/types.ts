@@ -44,4 +44,6 @@ export interface SearchResponse {
   results: ProductHit[]
   engine: string
   took_ms: number
+  /** The filters applied: clicked, or read from the words. */
+  filters: { category: Category | null; max_price: number | null }
 }

@@ -266,6 +266,10 @@ h1 {
   color: var(--muted);
 }
 
+.from-words {
+  color: var(--accent);
+}
+
 /* ---- Explain mode ------------------------------------------------ */
 
 .search-row {

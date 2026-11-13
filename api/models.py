@@ -74,3 +74,4 @@ class SearchResponse(BaseModel):
     results: list[ProductHit]
     engine: str
     took_ms: int
+    filters: SearchFilters  # the filters applied: clicked or read from words
