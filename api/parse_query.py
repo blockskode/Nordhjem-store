@@ -104,13 +104,6 @@ def parse_query(text: str) -> ParsedQuery:
     Returns:
         The search text, and the category and max price if given.
     """
-    # TODO 4: call get_text_client().models.generate_content with
-    #   model=TEXT_MODEL, contents=text and a
-    #   types.GenerateContentConfig(...) holding three settings:
-    #   system_instruction=INSTRUCTION,
-    #   response_mime_type="application/json",
-    #   response_schema=ParsedQuery.
-    #   The reply has a .parsed attribute: a ready ParsedQuery. Return it.
     response = get_text_client().models.generate_content(
         model=TEXT_MODEL,
         contents=text,
