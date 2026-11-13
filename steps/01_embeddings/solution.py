@@ -62,7 +62,7 @@ def load_index() -> Index:
                  categories=np.array(categories), prices=np.array(prices))
 
 
-def embed_query(text: str) -> np.ndarray:
+def get_embed_query(text: str) -> np.ndarray:
     """Embed the customer's question.
 
     Args:
@@ -110,7 +110,7 @@ def filter_products(index: Index, filters: SearchFilters) -> np.ndarray:
     return mask
 
 
-def top_k(scores: np.ndarray, k: int) -> list[int]:
+def get_top_k(scores: np.ndarray, k: int) -> list[int]:
     """Find the positions of the k highest scores, highest first.
 
     Args:
@@ -136,10 +136,10 @@ def search(query: str, filters: SearchFilters, k: int) -> list[Hit]:
         Up to k hits, best first, each with its cosine similarity.
     """
     index = load_index()
-    question = normalise(embed_query(query))
+    question = normalise(get_embed_query(query))
     scores = index.vectors @ question
     mask = filter_products(index, filters)
     scores = np.where(mask, scores, -np.inf)
     k = min(k, int(mask.sum()))
     return [Hit(product_id=index.ids[i], score=float(scores[i]))
-            for i in top_k(scores, k)]
+            for i in get_top_k(scores, k)]

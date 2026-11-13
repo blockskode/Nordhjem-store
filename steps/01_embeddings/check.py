@@ -119,10 +119,10 @@ def test_filter_and_top_k(module: ModuleType) -> list[bool]:
         "filter_products: no filters keeps all four",
         f"got {got.tolist()}"))
     scores = np.array([0.2, 0.9, 0.1, 0.7, 0.5])
-    got = module.top_k(scores, 3)
+    got = module.get_top_k(scores, 3)
     results.append(check(
         got is not None and list(got) == [1, 3, 4],
-        "top_k([0.2, 0.9, 0.1, 0.7, 0.5], 3) is [1, 3, 4]",
+        "get_top_k([0.2, 0.9, 0.1, 0.7, 0.5], 3) is [1, 3, 4]",
         f"got {got}"))
     return results
 
