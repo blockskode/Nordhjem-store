@@ -1,0 +1,381 @@
+[
+  {
+    "question": "How many days do I have to return a sofa?",
+    "country": null,
+    "answer": "60 days from delivery.",
+    "must_include": [
+      "60"
+    ],
+    "sources": [
+      "returns-2026"
+    ],
+    "kind": "version",
+    "why": "the 2025 policy says 30 days; the new one must win"
+  },
+  {
+    "question": "Is the return period still 30 days?",
+    "country": null,
+    "answer": "No. Since 1 January 2026 it is 60 days.",
+    "must_include": [
+      "60"
+    ],
+    "sources": [
+      "returns-2026"
+    ],
+    "kind": "version",
+    "why": "the question itself names the old number"
+  },
+  {
+    "question": "Do I pay to send a return back if I bring it to a store?",
+    "country": null,
+    "answer": "No, returns in a store are free.",
+    "must_include": [
+      "free"
+    ],
+    "sources": [
+      "returns-2026"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "Does my return need the original box?",
+    "country": null,
+    "answer": "No, but it must be packed so it is not damaged.",
+    "must_include": [
+      "original packaging"
+    ],
+    "sources": [
+      "returns-2026"
+    ],
+    "kind": "version",
+    "why": "2025 required the original packaging; 2026 does not"
+  },
+  {
+    "question": "Can I return a mattress after 80 nights?",
+    "country": null,
+    "answer": "Yes. The 100-night trial lets you return it between night 30 and night 100.",
+    "must_include": [
+      "100"
+    ],
+    "sources": [
+      "mattress-trial"
+    ],
+    "kind": "two_docs",
+    "why": "the normal returns policy excludes mattresses; the trial applies"
+  },
+  {
+    "question": "I slept on my new mattress for 10 nights and hate it. Can I return it now?",
+    "country": null,
+    "answer": "Not yet. You must sleep on it for at least 30 nights first.",
+    "must_include": [
+      "30"
+    ],
+    "sources": [
+      "mattress-trial"
+    ],
+    "kind": "detail",
+    "why": ""
+  },
+  {
+    "question": "Can I return an opened pillow?",
+    "country": null,
+    "answer": "No, not unless it is faulty, for hygiene reasons.",
+    "must_include": [
+      "hygiene"
+    ],
+    "sources": [
+      "returns-2026"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "How much is delivery to Sweden?",
+    "country": "SE",
+    "answer": "599 SEK, free on orders over 7,000 SEK.",
+    "must_include": [
+      "599"
+    ],
+    "sources": [
+      "delivery-se"
+    ],
+    "kind": "country",
+    "why": "Denmark's 499 kr is the closest wrong answer"
+  },
+  {
+    "question": "How much does delivery cost?",
+    "country": "DK",
+    "answer": "499 kr, free over 5,000 kr.",
+    "must_include": [
+      "499"
+    ],
+    "sources": [
+      "delivery-dk"
+    ],
+    "kind": "country",
+    "why": "no country in the words: the customer's country decides"
+  },
+  {
+    "question": "Is delivery free if I spend a lot in Norway?",
+    "country": "NO",
+    "answer": "No. There is no free delivery in Norway; it is 799 NOK.",
+    "must_include": [
+      "799"
+    ],
+    "sources": [
+      "delivery-no"
+    ],
+    "kind": "country",
+    "why": "every other country has a free-delivery limit"
+  },
+  {
+    "question": "How much is a return pickup in Norway?",
+    "country": "NO",
+    "answer": "599 NOK.",
+    "must_include": [
+      "599"
+    ],
+    "sources": [
+      "delivery-no"
+    ],
+    "kind": "topic",
+    "why": "a returns question whose answer is in the Norway delivery document"
+  },
+  {
+    "question": "Do I pay customs when my sofa arrives in Oslo?",
+    "country": "NO",
+    "answer": "No. Prices include Norwegian VAT and Nordhjem handles customs.",
+    "must_include": [
+      "customs"
+    ],
+    "sources": [
+      "delivery-no"
+    ],
+    "kind": "country",
+    "why": ""
+  },
+  {
+    "question": "Can you assemble my dining table in Hamburg?",
+    "country": "DE",
+    "answer": "No. Assembly is only offered in Denmark and Sweden.",
+    "must_include": [
+      "Denmark and Sweden"
+    ],
+    "sources": [
+      "assembly"
+    ],
+    "kind": "country",
+    "why": ""
+  },
+  {
+    "question": "What does assembly of a corner sofa cost in Denmark?",
+    "country": "DK",
+    "answer": "799 kr.",
+    "must_include": [
+      "799"
+    ],
+    "sources": [
+      "assembly"
+    ],
+    "kind": "plain",
+    "why": "the Swedish price (949 SEK) is in the same document"
+  },
+  {
+    "question": "Can you take my old sofa when you deliver the new one?",
+    "country": "DK",
+    "answer": "Yes, in Denmark, for 299 kr, booked with the order.",
+    "must_include": [
+      "299"
+    ],
+    "sources": [
+      "old-furniture-pickup"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "What is the warranty on an office chair?",
+    "country": null,
+    "answer": "5 years on the frame and the gas lift.",
+    "must_include": [
+      "5 years"
+    ],
+    "sources": [
+      "warranty"
+    ],
+    "kind": "close_but_wrong",
+    "why": "the mattress warranty says 10 years"
+  },
+  {
+    "question": "How long is the warranty on a mattress?",
+    "country": null,
+    "answer": "10 years on the springs and foam core.",
+    "must_include": [
+      "10"
+    ],
+    "sources": [
+      "mattress-warranty"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "How long can I complain about a faulty sofa in Norway?",
+    "country": "NO",
+    "answer": "5 years, because Norwegian law gives 5 years for long-lasting items.",
+    "must_include": [
+      "5"
+    ],
+    "sources": [
+      "warranty"
+    ],
+    "kind": "country",
+    "why": "the other countries have 2 years"
+  },
+  {
+    "question": "Kan jeg betale med MobilePay?",
+    "country": "DK",
+    "answer": "Ja, MobilePay kan bruges i Danmark.",
+    "must_include": [
+      "MobilePay"
+    ],
+    "sources": [
+      "payment-methods"
+    ],
+    "kind": "language",
+    "why": ""
+  },
+  {
+    "question": "Kann ich mit PayPal bezahlen?",
+    "country": "DE",
+    "answer": "Ja, in Deutschland.",
+    "must_include": [
+      "PayPal"
+    ],
+    "sources": [
+      "payment-methods"
+    ],
+    "kind": "language",
+    "why": ""
+  },
+  {
+    "question": "Can I pay in instalments in Norway?",
+    "country": "NO",
+    "answer": "No, instalments are not available in Norway.",
+    "must_include": [
+      "not available"
+    ],
+    "sources": [
+      "instalments"
+    ],
+    "kind": "country",
+    "why": ""
+  },
+  {
+    "question": "Can I use my Danish gift card in your Malmö store?",
+    "country": null,
+    "answer": "No. A gift card only works in the country where it was bought.",
+    "must_include": [
+      "country"
+    ],
+    "sources": [
+      "gift-cards",
+      "stores"
+    ],
+    "kind": "two_docs",
+    "why": ""
+  },
+  {
+    "question": "Can I change the delivery address the day before delivery?",
+    "country": null,
+    "answer": "No. Changes must be made at least 48 hours before delivery.",
+    "must_include": [
+      "48"
+    ],
+    "sources": [
+      "change-cancel-order"
+    ],
+    "kind": "detail",
+    "why": ""
+  },
+  {
+    "question": "The price of my rug dropped a week after I bought it. Can I get the difference?",
+    "country": null,
+    "answer": "Yes, within 14 days of purchase.",
+    "must_include": [
+      "14"
+    ],
+    "sources": [
+      "price-match"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "Will you match a lower price from another shop?",
+    "country": null,
+    "answer": "No, only Nordhjem's own prices.",
+    "must_include": [
+      "competitors"
+    ],
+    "sources": [
+      "price-match"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "How do I clean a velvet sofa?",
+    "country": null,
+    "answer": "Brush gently with the pile; leave wet stains to a professional cleaner.",
+    "must_include": [
+      "brush"
+    ],
+    "sources": [
+      "sofa-care"
+    ],
+    "kind": "plain",
+    "why": ""
+  },
+  {
+    "question": "Do you deliver to Finland?",
+    "country": null,
+    "answer": "No. Nordhjem only delivers to Denmark, Sweden, Norway and Germany.",
+    "must_include": [
+      "Denmark, Sweden, Norway and Germany"
+    ],
+    "sources": [
+      "about"
+    ],
+    "kind": "plain",
+    "why": "answerable: the about page lists the countries"
+  },
+  {
+    "question": "Do you offer an interior design service?",
+    "country": null,
+    "answer": "I don't know: the policies do not mention it. Contact customer service.",
+    "must_include": [],
+    "sources": [],
+    "kind": "no_answer",
+    "why": "nothing in the documents; a guess is wrong"
+  },
+  {
+    "question": "What is the weight limit of the HALDAGAARD sofa?",
+    "country": null,
+    "answer": "I don't know: the policies do not say. Contact customer service.",
+    "must_include": [],
+    "sources": [],
+    "kind": "no_answer",
+    "why": "a product question, not in the policies"
+  },
+  {
+    "question": "Can I rent furniture from you?",
+    "country": null,
+    "answer": "I don't know: the policies do not mention renting. Contact customer service.",
+    "must_include": [],
+    "sources": [],
+    "kind": "no_answer",
+    "why": ""
+  }
+]
