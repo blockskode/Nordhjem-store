@@ -8,6 +8,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 COPY api ./api
 COPY data/products.jsonl data/product_images.json ./data/
+COPY data/policies ./data/policies
 
 # Cloud Run sets PORT (8080 by default).
 CMD ["sh", "-c", "uv run --no-sync uvicorn api.app:app --host 0.0.0.0 --port ${PORT:-8080}"]

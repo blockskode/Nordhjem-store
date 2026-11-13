@@ -51,3 +51,34 @@ export interface SearchResponse {
     max_price: number | null
   }
 }
+
+// ---- the policy chat (Step 2) ----
+
+export type Country = 'DK' | 'SE' | 'NO' | 'DE'
+export type Topic =
+  | 'returns'
+  | 'delivery'
+  | 'warranty'
+  | 'payment'
+  | 'orders'
+  | 'shop'
+
+/** Body of POST /api/ask. Mirrors AskRequest in api/models.py. */
+export interface AskRequest {
+  question: string
+  country: Country
+  topic?: Topic
+}
+
+export interface Source {
+  doc_id: string
+  title: string
+}
+
+/** Reply of POST /api/ask. Mirrors AskResponse in api/models.py. */
+export interface AskResponse {
+  answer: string
+  sources: Source[]
+  engine: string
+  took_ms: number
+}

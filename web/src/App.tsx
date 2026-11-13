@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { browseProducts, searchProducts } from './api'
 import { ExplainPanel } from './components/ExplainPanel'
 import { Filters } from './components/Filters'
+import { ChatDialog } from './components/ChatDialog'
 import { SkeletonCard } from './components/SkeletonCard'
 import { ProductCard } from './components/ProductCard'
 import { SearchBar } from './components/SearchBar'
@@ -83,6 +84,8 @@ export default function App() {
   const [explain, setExplain] = useState(explainWasOn)
   const [overFilters, setOverFilters] = useState(false) // hovered or focused
   const [waitingFor, setWaitingFor] = useState('Loading products')
+  const [chatOpen, setChatOpen] = useState(false)
+  const closeChat = useCallback(() => setChatOpen(false), [])
 
   /** Show the first page of the catalogue (no search). */
   async function browse(c?: Category, p?: number) {
@@ -297,6 +300,13 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {!chatOpen && (
+        <button className="ask-us" onClick={() => setChatOpen(true)}>
+          Ask us
+        </button>
+      )}
+      {chatOpen && <ChatDialog onClose={closeChat} />}
     </>
   )
 }

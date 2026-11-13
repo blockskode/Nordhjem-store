@@ -1,4 +1,6 @@
 import type {
+  AskRequest,
+  AskResponse,
   BrowseRequest,
   BrowseResponse,
   SearchRequest,
@@ -35,4 +37,17 @@ export async function browseProducts(
     throw new Error(`Browse failed with status ${response.status}`)
   }
   return (await response.json()) as BrowseResponse
+}
+
+/** Ask the policy chat one question. Throws on any error. */
+export async function askPolicy(request: AskRequest): Promise<AskResponse> {
+  const response = await fetch('/api/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+  if (!response.ok) {
+    throw new Error(`Ask failed with status ${response.status}`)
+  }
+  return (await response.json()) as AskResponse
 }

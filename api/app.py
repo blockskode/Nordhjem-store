@@ -13,12 +13,14 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 
-from api import keyword_search, parse_query, search
+from api import (
+    keyword_answer, keyword_search, parse_query, rag, search,
+)
 from api.catalog import DATA_DIR, load_products
 from api.keyword_search import passes
 from api.models import (
-    BrowseResponse, Category, Hit, ProductHit, SearchFilters,
-    SearchRequest, SearchResponse,
+    AskRequest, AskResponse, BrowseResponse, Category, Hit, ProductHit,
+    SearchFilters, SearchRequest, SearchResponse,
 )
 
 # Where the page loads photos from; {file} is replaced by the file name.
@@ -123,6 +125,31 @@ def search_products(request: SearchRequest) -> SearchResponse:
     results = [to_product_hit(h.product_id, h.score) for h in hits]
     return SearchResponse(results=results, engine=engine,
                           took_ms=took_ms, filters=filters)
+
+
+@app.post("/api/ask")
+def ask(request: AskRequest) -> AskResponse:
+    """Answer one policy question from the chat.
+
+    Uses the owner's RAG (api/rag.py) when it works, else the keyword
+    placeholder.
+
+    Args:
+        request: the question, the customer's country and a topic.
+
+    Returns:
+        The answer, its sources, which engine answered, and the time.
+    """
+    start = time.perf_counter()
+    try:
+        text, sources = rag.answer(request)
+        engine = "your RAG"
+    except NotImplementedError:
+        text, sources = keyword_answer.answer(request)
+        engine = "keyword placeholder"
+    took_ms = round((time.perf_counter() - start) * 1000)
+    return AskResponse(answer=text, sources=sources, engine=engine,
+                       took_ms=took_ms)
 
 
 @app.get("/api/products")

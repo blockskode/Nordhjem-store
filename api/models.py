@@ -82,3 +82,34 @@ class SearchResponse(BaseModel):
     engine: str
     took_ms: int
     filters: SearchFilters  # the filters applied: clicked or read from words
+
+
+# ---- the policy chat (Step 2) --------------------------------------
+
+Country = Literal["DK", "SE", "NO", "DE"]
+Topic = Literal["returns", "delivery", "warranty", "payment", "orders",
+                "shop"]
+
+
+class AskRequest(BaseModel):
+    """The body of POST /api/ask: one question from the chat."""
+
+    question: str = Field(min_length=1, max_length=500)
+    country: Country
+    topic: Topic | None = None   # None: all topics
+
+
+class Source(BaseModel):
+    """One policy document an answer was taken from."""
+
+    doc_id: str
+    title: str
+
+
+class AskResponse(BaseModel):
+    """The reply of POST /api/ask."""
+
+    answer: str
+    sources: list[Source]
+    engine: str
+    took_ms: int

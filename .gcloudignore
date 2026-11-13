@@ -8,4 +8,6 @@
 !data/
 !data/products.jsonl
 !data/product_images.json
+!data/policies/
+!data/policies/**
 api/__pycache__/
