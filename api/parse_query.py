@@ -19,8 +19,7 @@ from functools import lru_cache
 
 from google import genai
 from google.genai import types  # noqa: F401 - you need it in parse_query
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 from api.models import Category, SearchFilters  # noqa: F401
 
 PROJECT = "nordhjemstore"
@@ -34,12 +33,9 @@ class ParsedQuery(BaseModel):
     This class is the form Gemini must fill in: it is passed as the
     response_schema, so the reply always has exactly these fields.
     """
-
     search_text: str
-    # TODO 1: add the two filter fields, with the same types as in
-    #   SearchFilters (api/models.py), but with no default value:
-    #   category is one of the 8 categories or None; max_price is a
-    #   number or None. No default means Gemini must always fill them.
+    category: Category | None
+    max_price: float | None
 
 
 def merge_filters(clicked: SearchFilters,
@@ -58,23 +54,30 @@ def merge_filters(clicked: SearchFilters,
     Returns:
         One SearchFilters for the search.
     """
-    # TODO 2: for the category, take the clicked one if it is not None,
-    #   otherwise the parsed one. The same for max_price. Return a new
-    #   SearchFilters(category=..., max_price=...).
-    raise NotImplementedError("TODO 2: merge_filters")
+    category = clicked.category if clicked.category is not None else parsed.category
+    max_price = clicked.max_price if clicked.max_price is not None else parsed.max_price
+    return SearchFilters(category=category, max_price=max_price)
 
 
-# TODO 3: write the instruction for the text model, as plain English.
-#   It is the only thing that tells Gemini what you mean. Say:
-#   - what the three fields are;
-#   - the 8 allowed categories, and that other words count too (a bed,
-#     a madras, a couch...);
-#   - only set a filter when the customer clearly says it: no guessing
-#     (look at "something cosy for the living room floor" in
-#     data/eval/filter_queries.json);
-#   - max_price is a price in kroner, never a size ("180x200") or a
-#     count ("for 8 people"); with a range, use the upper end.
-INSTRUCTION = """"""
+INSTRUCTION = """You read what a customer typed in the search box of
+Nordhjem, a furniture shop. Split it into three parts.
+
+search_text: what the customer wants, in their own words, without the
+price. Keep everything else, including sizes and counts.
+
+category: one of sofa, mattress, rug, dining_table, office_chair,
+garden, pillow, duvet. Set it only when the customer names the kind of
+product. Other words and languages count: a bed or madras is a
+mattress, a couch is a sofa, a dyne is a duvet, a Bürostuhl is an
+office_chair. If the customer does not name a kind of product, use
+null. Do not guess from the room, the use or the feeling: "something
+soft for the bedroom" has no category.
+
+max_price: the highest price in Danish kroner the customer accepts, as
+a number. The currency may be written as kr, kroner, dkk, or not at
+all. Only a price counts: a size such as 180x200 or a count such as
+"for 8 people" is never a price. With a range, use the upper end. If
+no price is given, use null."""
 
 
 @lru_cache(maxsize=1)
@@ -108,4 +111,14 @@ def parse_query(text: str) -> ParsedQuery:
     #   response_mime_type="application/json",
     #   response_schema=ParsedQuery.
     #   The reply has a .parsed attribute: a ready ParsedQuery. Return it.
-    raise NotImplementedError("TODO 4: parse_query")
+    response = get_text_client().models.generate_content(
+        model=TEXT_MODEL,
+        contents=text,
+        config=types.GenerateContentConfig(
+            system_instruction=INSTRUCTION,
+            response_mime_type="application/json",
+            response_schema=ParsedQuery
+
+        ) 
+    )
+    return response.parsed
