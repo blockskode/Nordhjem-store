@@ -45,5 +45,9 @@ export interface SearchResponse {
   engine: string
   took_ms: number
   /** The filters applied: clicked, or read from the words. */
-  filters: { category: Category | null; max_price: number | null }
+  filters: {
+    category: Category | null
+    colour: string | null
+    max_price: number | null
+  }
 }

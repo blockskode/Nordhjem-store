@@ -99,6 +99,7 @@ def test_filter_and_top_k(module: ModuleType) -> list[bool]:
         ids=["P1", "P2", "P3", "P4"],
         vectors=np.zeros((4, 3)),
         categories=np.array(["sofa", "sofa", "rug", "sofa"]),
+        colours=np.array(["dark green", "grey", "dark green", "white"]),
         prices=np.array([3000.0, 6500.0, 1200.0, 2500.0]),
     )
     results = []
@@ -112,6 +113,12 @@ def test_filter_and_top_k(module: ModuleType) -> list[bool]:
     results.append(check(
         got.tolist() == [True, False, False, True],
         "filter_products: sofa and max price 4000 keeps P1 and P4",
+        f"got {got.tolist()}"))
+    filters = SearchFilters(category="sofa", colour="dark green")
+    got = np.asarray(module.filter_products(index, filters))
+    results.append(check(
+        got.tolist() == [True, False, False, False],
+        "filter_products: dark green sofa keeps only P1",
         f"got {got.tolist()}"))
     got = np.asarray(module.filter_products(index, SearchFilters()))
     results.append(check(

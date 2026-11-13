@@ -34,6 +34,15 @@ MIN_PRECISION = 0.90
 
 T = TypeVar("T")
 
+# (sentence, the colour wanted): customers rarely say the data's words
+COLOUR_SENTENCES = [
+    ("green sofa that is comfy, less than 3000", "dark green"),
+    ("grøn sofa", "dark green"),
+    ("navy rug for the hallway", "blue"),
+    ("cream coloured duvet", "beige"),
+    ("a sofa for my living room", None),
+]
+
 
 def load_module(use_solution: bool) -> ModuleType:
     """Import api/parse_query.py, or the reference solution.
@@ -98,11 +107,11 @@ def test_offline(module: ModuleType) -> bool:
     """
     fields = set(module.ParsedQuery.model_fields)
     results = [check(
-        fields == {"search_text", "category", "max_price"},
-        "ParsedQuery has search_text, category and max_price",
+        fields == {"search_text", "category", "colour", "max_price"},
+        "ParsedQuery has search_text, category, colour and max_price",
         f"it has {sorted(fields)}")]
-    parsed = module.ParsedQuery(search_text="comfy bed",
-                                category="mattress", max_price=4000)
+    parsed = module.ParsedQuery(search_text="comfy bed", category="mattress",
+                                colour=None, max_price=4000)
     cases = [
         (SearchFilters(), "mattress", 4000.0,
          "nothing clicked: both come from the words"),
@@ -117,11 +126,19 @@ def test_offline(module: ModuleType) -> bool:
             got.category == category and got.max_price == price,
             f"merge_filters: {what}",
             f"got category={got.category!r}, max_price={got.max_price}"))
+    green = module.ParsedQuery(search_text="sofa", category="sofa",
+                               colour="dark green", max_price=None)
+    got = module.merge_filters(SearchFilters(), green)
+    results.append(check(
+        got.colour == "dark green",
+        "merge_filters: a colour from the words is kept",
+        f"got colour={got.colour!r}"))
     nothing = module.ParsedQuery(search_text="x", category=None,
-                                 max_price=None)
+                                 colour=None, max_price=None)
     got = module.merge_filters(SearchFilters(), nothing)
     results.append(check(
-        got.category is None and got.max_price is None,
+        got.category is None and got.colour is None
+        and got.max_price is None,
         "merge_filters: no filters anywhere stays no filters",
         f"got category={got.category!r}, max_price={got.max_price}"))
     return all(results)
@@ -153,6 +170,14 @@ def test_sentences(module: ModuleType) -> bool:
         if not (category_ok and price_ok):
             print(f"{'':>12}want {item['category']}, {item['max_price']}"
                   f" ({item['why']})")
+    right_colour = 0
+    print(f"\n{'colour':>6}  {'sentence':<42} read as")
+    for text, want in COLOUR_SENTENCES:
+        parsed = with_retry(lambda: module.parse_query(text))
+        ok = parsed.colour == want
+        right_colour += ok
+        print(f"{'ok' if ok else 'NO':>6}  {text:<42} {parsed.colour}"
+              + ("" if ok else f"   (want {want})"))
     n = len(sentences)
     print()
     ok_category = check(right_category / n >= MIN_FIELD,
@@ -161,7 +186,10 @@ def test_sentences(module: ModuleType) -> bool:
     ok_price = check(right_price / n >= MIN_FIELD,
                      f"max_price right in {right_price} of {n} "
                      f"(pass mark {MIN_FIELD:.0%})")
-    return ok_category and ok_price
+    n_colour = len(COLOUR_SENTENCES)
+    ok_colour = check(right_colour == n_colour,
+                      f"colour right in {right_colour} of {n_colour}")
+    return ok_category and ok_price and ok_colour
 
 
 def score(search: ModuleType, query: str, filters: SearchFilters,

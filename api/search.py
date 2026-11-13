@@ -40,6 +40,7 @@ class Index:
     ids: list[str]
     vectors: np.ndarray      # shape (n, 768), every row length 1
     categories: np.ndarray   # shape (n,), text
+    colours: np.ndarray      # shape (n,), text
     prices: np.ndarray       # shape (n,), DKK
 
 
@@ -66,14 +67,16 @@ def load_index() -> Index:
         normalised them).
     """
     db = firestore.Client(project=PROJECT) 
-    idd, vector, category, price = [], [], [], []
+    idd, vector, category, price, colour = [], [], [], [], []
     for document in db.collection("products").stream():
         product = document.to_dict()
         idd.append(document.id)
         vector.append(list(product["embedding"]))
         category.append(product["category"])
         price.append(product["price_dkk"])
-    store_index = Index(ids=idd, vectors=np.array(vector), categories=np.array(category), prices=np.array(price))
+        colour.append(product["colour"])
+    store_index = Index(ids=idd, vectors=np.array(vector), categories=np.array(category), 
+                        prices=np.array(price), colours=np.array(colour))
     return store_index
 
 
@@ -145,6 +148,8 @@ def filter_products(index: Index, filters: SearchFilters) -> np.ndarray:
         filtered_array =  filtered_array & (index.categories == filters.category)
     if filters.max_price is not None:
         filtered_array = filtered_array & (index.prices <= filters.max_price)
+    if filters.colour is not None:
+        filtered_array = filtered_array & (index.colours == filters.colour)
     return filtered_array
 
 

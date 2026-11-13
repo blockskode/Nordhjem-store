@@ -12,14 +12,14 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel
 
-from api.models import Category, SearchFilters
+from api.models import Category, Colour, SearchFilters
 
 PROJECT = "nordhjemstore"
 TEXT_LOCATION = "global"
 TEXT_MODEL = "gemini-3-flash-preview"
 
 INSTRUCTION = """You read what a customer typed in the search box of
-Nordhjem, a furniture shop. Split it into three parts.
+Nordhjem, a furniture shop. Split it into four parts.
 
 search_text: what the customer wants, in their own words, without the
 price.
@@ -28,6 +28,10 @@ category: one of sofa, mattress, rug, dining_table, office_chair,
 garden, pillow, duvet. Set it only when the customer names the kind of
 product, in any language (a bed or madras is a mattress, a couch is a
 sofa). If they do not name it, use null. Do not guess.
+
+colour: one of blue, rust, dark green, beige, grey, black, white. Set it
+only when the customer names a colour; map close words (green is dark
+green, navy is blue, cream is beige). If no colour is named, use null.
 
 max_price: the highest price in Danish kroner the customer accepts, as
 a number. Only set it for a price, never for a size or a count. With a
@@ -39,6 +43,7 @@ class ParsedQuery(BaseModel):
 
     search_text: str
     category: Category | None
+    colour: Colour | None
     max_price: float | None
 
 
@@ -89,7 +94,11 @@ def merge_filters(clicked: SearchFilters,
     category = clicked.category
     if category is None:
         category = parsed.category
+    colour = clicked.colour
+    if colour is None:
+        colour = parsed.colour
     max_price = clicked.max_price
     if max_price is None:
         max_price = parsed.max_price
-    return SearchFilters(category=category, max_price=max_price)
+    return SearchFilters(category=category, colour=colour,
+                         max_price=max_price)

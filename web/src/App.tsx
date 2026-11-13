@@ -36,6 +36,9 @@ function filtersFromWords(
   if (applied.category && clickedCategory === undefined) {
     found.push(CATEGORY_LABELS[applied.category])
   }
+  if (applied.colour) {
+    found.push(applied.colour)
+  }
   if (applied.max_price && clickedPrice === undefined) {
     found.push(`up to ${formatPrice(applied.max_price)}`)
   }

@@ -11,6 +11,10 @@ Category = Literal[
     "sofa", "mattress", "rug", "dining_table",
     "office_chair", "garden", "pillow", "duvet",
 ]
+Colour = Literal[
+    "blue", "rust", "dark green", "beige",
+    "grey", "black", "white",
+]
 
 
 class SearchFilters(BaseModel):
@@ -27,11 +31,14 @@ class SearchFilters(BaseModel):
     Attributes:
         category: keep only products in this category, or None for
             any category.
+        colour: keep only products in this colour, or None for any
+            colour.
         max_price: keep only products costing this much or less
             (DKK), or None for any price. Must be above 0.
     """
 
     category: Category | None = None
+    colour: Colour | None = None
     max_price: float | None = Field(default=None, gt=0)
 
 

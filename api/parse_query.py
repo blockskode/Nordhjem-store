@@ -19,8 +19,9 @@ from functools import lru_cache
 
 from google import genai
 from google.genai import types  # noqa: F401 - you need it in parse_query
-from pydantic import BaseModel, Field
-from api.models import Category, SearchFilters  # noqa: F401
+from pydantic import BaseModel
+
+from api.models import Category, Colour, SearchFilters
 
 PROJECT = "nordhjemstore"
 TEXT_LOCATION = "global"
@@ -35,6 +36,7 @@ class ParsedQuery(BaseModel):
     """
     search_text: str
     category: Category | None
+    colour: Colour | None
     max_price: float | None
 
 
@@ -54,17 +56,20 @@ def merge_filters(clicked: SearchFilters,
     Returns:
         One SearchFilters for the search.
     """
-    category = clicked.category if clicked.category is not None else parsed.category
-    max_price = clicked.max_price if clicked.max_price is not None else parsed.max_price
-    return SearchFilters(category=category, max_price=max_price)
+    category = (clicked.category if clicked.category is not None
+                else parsed.category)
+    colour = clicked.colour if clicked.colour is not None else parsed.colour
+    max_price = (clicked.max_price if clicked.max_price is not None
+                 else parsed.max_price)
+    return SearchFilters(category=category, colour=colour,
+                         max_price=max_price)
 
 
 INSTRUCTION = """You read what a customer typed in the search box of
-Nordhjem, a furniture shop. Split it into three parts.
+Nordhjem, a furniture shop. Split it into four parts.
 
 search_text: what the customer wants, in their own words, without the
 price. Keep everything else, including sizes and counts.
-
 category: one of sofa, mattress, rug, dining_table, office_chair,
 garden, pillow, duvet. Set it only when the customer names the kind of
 product. Other words and languages count: a bed or madras is a
@@ -72,6 +77,12 @@ mattress, a couch is a sofa, a dyne is a duvet, a Bürostuhl is an
 office_chair. If the customer does not name a kind of product, use
 null. Do not guess from the room, the use or the feeling: "something
 soft for the bedroom" has no category.
+
+colour: one of blue, rust, dark green, beige, grey, black, white. Set it
+only when the customer names a colour. Map close words to these: green
+or olive is dark green, cream or sand is beige, navy is blue, orange or
+terracotta is rust. Other languages count too: grøn and grün are dark
+green. If no colour is named, use null.
 
 max_price: the highest price in Danish kroner the customer accepts, as
 a number. The currency may be written as kr, kroner, dkk, or not at

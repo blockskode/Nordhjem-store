@@ -29,6 +29,7 @@ class Index:
     ids: list[str]
     vectors: np.ndarray      # shape (n, 768), every row length 1
     categories: np.ndarray   # shape (n,), text
+    colours: np.ndarray      # shape (n,), text
     prices: np.ndarray       # shape (n,), DKK
 
 
@@ -51,15 +52,17 @@ def load_index() -> Index:
         The index. The vectors were normalised by the loader.
     """
     db = firestore.Client(project=PROJECT)
-    ids, vectors, categories, prices = [], [], [], []
+    ids, vectors, categories, colours, prices = [], [], [], [], []
     for document in db.collection("products").stream():
         product = document.to_dict()
         ids.append(document.id)
         vectors.append(list(product["embedding"]))
         categories.append(product["category"])
+        colours.append(product["colour"])
         prices.append(product["price_dkk"])
     return Index(ids=ids, vectors=np.array(vectors),
-                 categories=np.array(categories), prices=np.array(prices))
+                 categories=np.array(categories),
+                 colours=np.array(colours), prices=np.array(prices))
 
 
 def get_embed_query(text: str) -> np.ndarray:
@@ -107,6 +110,8 @@ def filter_products(index: Index, filters: SearchFilters) -> np.ndarray:
         mask &= index.categories == filters.category
     if filters.max_price is not None:
         mask &= index.prices <= filters.max_price
+    if filters.colour is not None:
+        mask &= index.colours == filters.colour
     return mask
 
 
