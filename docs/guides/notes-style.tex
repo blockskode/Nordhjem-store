@@ -1,0 +1,115 @@
+% Look and feel for the guides in this folder.
+% Only the typeface block changes between design variants.
+
+\usepackage{fontspec}
+\usepackage[a4paper, left=2.7cm, textwidth=13.2cm, marginparsep=0.7cm,
+  marginparwidth=4.0cm, top=3.0cm, bottom=3.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{marginnote}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, shapes.geometric}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+
+% ---- typeface (the design axis) -----------------------------------
+\input{notes-font}
+\setsansfont{texgyreheros}[Extension=.otf, UprightFont=*-regular,
+  BoldFont=*-bold, ItalicFont=*-italic, BoldItalicFont=*-bolditalic,
+  Scale=0.88]
+\setmonofont{lmmono10}[Extension=.otf, UprightFont=*-regular,
+  Scale=0.92]
+
+% ---- colours: calm neutrals, one accent ----------------------------
+\definecolor{ink}{HTML}{2E2622}
+\definecolor{muted}{HTML}{7A6D64}
+\definecolor{line}{HTML}{DDD3C7}
+\definecolor{paper}{HTML}{F6F1EA}
+\definecolor{accent}{HTML}{B5583A}
+\definecolor{accentbg}{HTML}{F5E6DF}
+
+\color{ink}
+\linespread{1.12}
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0pt}
+\emergencystretch=3em
+\frenchspacing
+
+% ---- headings ------------------------------------------------------
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{0pt}%
+  {3.2ex plus 1ex minus .2ex}{1.6ex}%
+  {\normalfont\Large\color{ink}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{0pt}%
+  {2.6ex plus .8ex minus .2ex}{1.0ex}%
+  {\normalfont\large\itshape\color{ink}}}
+\renewcommand\@seccntformat[1]{%
+  \llap{\color{accent}\csname the#1\endcsname\hspace{0.9em}}}
+\makeatother
+
+% ---- running head and foot ----------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\scshape\color{muted}%
+  \MakeLowercase{Semantic search}}
+\fancyhead[R]{\footnotesize\color{muted}\thepage}
+\fancyheadoffset[R]{0pt}
+
+% ---- margin notes: a short explanation of a term ------------------
+\newcommand{\term}[2]{\emph{#1}\marginnote{\footnotesize\raggedright
+  \color{muted}\textbf{\color{ink}#1:} #2}}
+\renewcommand{\marginfont}{\footnotesize}
+
+% ---- boxes ---------------------------------------------------------
+\newtcolorbox{keypoint}{colback=accentbg, colframe=accentbg,
+  boxrule=0pt, arc=0pt, left=10pt, right=10pt, top=7pt, bottom=7pt,
+  borderline west={2pt}{0pt}{accent}}
+\newtcolorbox{example}[1]{colback=white, colframe=line, boxrule=0.5pt,
+  arc=0pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  fonttitle=\small\scshape, coltitle=muted, colbacktitle=white,
+  title={\MakeLowercase{#1}}, titlerule=0.4pt, titlerule style=line}
+
+% ---- code ----------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{paper},
+  frame=none,
+  xleftmargin=0.7em, xrightmargin=0.7em,
+  aboveskip=0.9em, belowskip=0.9em,
+  columns=fullflexible, keepspaces=true,
+  showstringspaces=false,
+  keywordstyle=\color{accent},
+  commentstyle=\color{muted}\itshape,
+  literate={×}{{$\times$}}1 {→}{{$\rightarrow$}}1
+           {æ}{{\ae}}1 {ø}{{\o}}1 {å}{{\aa}}1 {ü}{{\"u}}1
+}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% ---- captions and tables -------------------------------------------
+\captionsetup{font={small}, labelfont={sc,color=muted},
+  textfont={color=muted}, labelsep=quad, justification=raggedright,
+  singlelinecheck=false}
+\renewcommand{\arraystretch}{1.18}
+
+% ---- figure styles -------------------------------------------------
+\tikzset{
+  box/.style={draw=line, fill=white, rounded corners=3pt,
+    font=\small, align=center, inner sep=6pt, minimum height=8mm},
+  hot/.style={box, draw=accent, fill=accentbg},
+  flow/.style={-{Stealth[length=2.2mm]}, draw=muted, line width=0.6pt},
+  hotflow/.style={-{Stealth[length=2.2mm]}, draw=accent,
+    line width=0.8pt},
+  lbl/.style={font=\footnotesize, text=muted, align=center},
+}
+
+\raggedbottom
