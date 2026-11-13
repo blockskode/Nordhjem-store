@@ -14,42 +14,52 @@ search, so those come first and as deep as possible.
 
 ## Start here (the exact next action)
 
-**Phase 1, Step 1 exercise** (`PLAN.md`, Step 1): the owner writes the
-semantic search in `api/search.py` (stub raises `NotImplementedError`).
-Claude prepares `steps/01_embeddings/`: learn PDF, check script
-(hit@5, precision@5 on `data/eval/product_queries.json`) and a
-reference solution kept apart. Before that, plumbing the search needs:
-a loader that puts products into Firestore with 768-number embeddings
-(`gemini-embedding-001`, `RETRIEVAL_DOCUMENT`) and a vector index.
+**Phase 2, Step 2: RAG over policies** (`PLAN.md`, Step 2). Not
+started. Needs first (Claude, plumbing): about 20 policy documents with
+the traps (old and new version, country differences, a question with
+no answer), a loader that chunks and embeds them into Firestore, an
+evaluation set, then the exercise (`api/rag.py`, owner) with learn PDF,
+check and reference. Design it with the owner first, one piece at a
+time.
 
-**Reminder for the owner (asked to be reminded):** before the owner's
-search can run on the live site, the Cloud Run service account
-`nordhjem-api@nordhjemstore.iam.gserviceaccount.com` needs
-`roles/datastore.user` and `roles/aiplatform.user` on `nordhjemstore`
-(the owner runs the grant; it is blocked for Claude), then redeploy.
+Done (2026-11-13):
+- **Step 1, semantic search**: the owner's `api/search.py` passes
+  (meaning 1.00 / 0.99, language 1.00 / 0.96). The owner renamed
+  `allowed` to `filter_products`, `embed_query` to `get_embed_query`,
+  `top_k` to `get_top_k`; `check.py` and `solution.py` follow.
+- **Step 1b, filters from the words** (`steps/01b_filters_from_words/`):
+  the owner's `api/parse_query.py` (ParsedQuery, merge_filters,
+  INSTRUCTION, parse_query with `gemini-3-flash-preview`, structured
+  output) passes 15 of 15 sentences; "sofa under 4000 kr" goes from
+  precision 0.00 to 1.00. `api/app.py` reads filters before searching
+  and falls back safely; the page shows "filtered by your words".
+- **Explain mode, piece 1** on the page: a toggle next to Search; hover
+  the filters to see `SearchFilters(...)`, a 4-product
+  `filter_products` table and the counts on all 500. Add one piece per
+  concept the owner covers (next candidate: scores and top-k).
+- `steps/01_embeddings/notes.pdf`: queries vs documents, what the score
+  means, where filters come from (Latin Modern, thesis style).
 
-Step 1 status: learn PDF, `check.py`, `solution.py` (passes: meaning
-1.00 / 0.99, language 1.00 / 0.96) are in `steps/01_embeddings/`; the
-owner is filling the TODOs in `api/search.py`, guided step by step.
+Known: each new search takes about 3 to 5 s (one Gemini call to read
+the filters, plus a cold start). Cheap fix offered for later: skip the
+call when the text has no number and no category word.
 
-Offered, not decided: mix categories in the browse order (now by
-product ID, so the first pages are all mattresses). The architecture
-PDF was postponed by the owner ("the diagrams are enough for now").
+Offered, not decided: mix categories in the browse order. The
+architecture PDF was postponed by the owner.
 
-### Live now (2026-11-12)
+### Live now (2026-11-13)
 
 - Site: https://nordhjemstore.web.app (React + TypeScript + Vite in
   `web/`, look "Linen and terracotta": bg `#F6F1EA`, ink `#2E2622`,
-  accent `#B5583A`). Browse 24 at a time with "Show more", category
-  chips, max price, sticky search bar, search kept in `?q=`.
+  accent `#B5583A`). Browse 24 at a time, category chips, max price,
+  sticky search bar, `?q=` in the address, Explain toggle.
 - API: Cloud Run `nordhjem-api` (europe-west1, max 3 instances,
-  public, service account `nordhjem-api@` with no roles yet),
+  public, service account `nordhjem-api@` with `roles/datastore.user`
+  and `roles/aiplatform.user`),
   https://nordhjem-api-757427498119.europe-west1.run.app. Routes:
-  `GET /api/health`, `POST /api/search`, `GET /api/products`
-  (browse), `GET /api/products/{id}`. Products are read from
-  `data/products.jsonl` baked into the container (Firestore comes
-  with the search step). Until `api/search.py` works, a keyword
-  search answers and the page says "keyword placeholder".
+  `GET /api/health`, `POST /api/search` (the owner's semantic search,
+  filters read from the words; reply includes the `filters` applied),
+  `GET /api/products` (browse), `GET /api/products/{id}`.
 - Photos: 125 in `gs://nordhjemstore.firebasestorage.app/product-images/`.
 - Rules: Firestore denies all browser access; Storage allows public
   read of `product-images/` only.
@@ -60,9 +70,10 @@ PDF was postponed by the owner ("the diagrams are enough for now").
 
 - Local: `uv run uvicorn api.app:app --reload --port 8000` (repo
   root) and `npm run dev` in `web/` (Vite forwards /api and /images).
-- API: the `gcloud run deploy nordhjem-api --source . ...` command
-  with `--allow-unauthenticated` is blocked for Claude by the
-  permission check; the owner runs it (full command in git history
+- API: `gcloud run deploy nordhjem-api --source . --region
+  europe-west1 --project nordhjemstore --quiet` keeps the existing
+  settings. The permission check sometimes blocks it for Claude; the
+  owner then runs it with `!`. The first deploy used (full command in git history
   of this file's commit, or: region europe-west1, service account
   above, `--max-instances 3 --memory 512Mi`, env
   `IMAGE_URL_TEMPLATE=https://firebasestorage.googleapis.com/v0/b/nordhjemstore.firebasestorage.app/o/product-images%2F{file}?alt=media`).
