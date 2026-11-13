@@ -92,7 +92,7 @@ def normalise(vectors: np.ndarray) -> np.ndarray:
     return vectors / lengths
 
 
-def allowed(index: Index, filters: SearchFilters) -> np.ndarray:
+def filter_products(index: Index, filters: SearchFilters) -> np.ndarray:
     """Mark which products pass the filters.
 
     Args:
@@ -138,7 +138,7 @@ def search(query: str, filters: SearchFilters, k: int) -> list[Hit]:
     index = load_index()
     question = normalise(embed_query(query))
     scores = index.vectors @ question
-    mask = allowed(index, filters)
+    mask = filter_products(index, filters)
     scores = np.where(mask, scores, -np.inf)
     k = min(k, int(mask.sum()))
     return [Hit(product_id=index.ids[i], score=float(scores[i]))

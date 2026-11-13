@@ -14,7 +14,22 @@ Category = Literal[
 
 
 class SearchFilters(BaseModel):
-    """Optional limits on which products a search may return."""
+    """The customer's filter choices, carried to the search.
+
+    Each field is one filter. When a field is set, the search must
+    drop every product that does not match it. When it is None, the
+    customer did not use that filter, and it removes nothing.
+
+    Example: SearchFilters(category="sofa", max_price=4000) means
+    "only sofas, and only those costing 4000 kr or less".
+    SearchFilters() means "no filters": every product may be returned.
+
+    Attributes:
+        category: keep only products in this category, or None for
+            any category.
+        max_price: keep only products costing this much or less
+            (DKK), or None for any price. Must be above 0.
+    """
 
     category: Category | None = None
     max_price: float | None = Field(default=None, gt=0)

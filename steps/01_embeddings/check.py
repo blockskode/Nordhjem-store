@@ -5,7 +5,7 @@ Run from the repo root:
     uv run python steps/01_embeddings/check.py             # api/search.py
     uv run python steps/01_embeddings/check.py --solution  # reference
 
-Part 1 tests normalise, allowed and top_k on small numbers you can
+Part 1 tests normalise, filter_products and top_k on small numbers you can
 compute by hand (no API calls). Part 2 asks the 23 test questions in
 data/eval/product_queries.json and measures hit@5 and precision@5.
 """
@@ -86,8 +86,8 @@ def test_normalise(module: ModuleType) -> list[bool]:
     return [first, second]
 
 
-def test_allowed_and_top_k(module: ModuleType) -> list[bool]:
-    """Test allowed and top_k on the 4-product example from the PDF.
+def test_filter_and_top_k(module: ModuleType) -> list[bool]:
+    """Test filter_products and top_k on the 4-product example from the PDF.
 
     Args:
         module: the module under test.
@@ -102,21 +102,21 @@ def test_allowed_and_top_k(module: ModuleType) -> list[bool]:
         prices=np.array([3000.0, 6500.0, 1200.0, 2500.0]),
     )
     results = []
-    got = np.asarray(module.allowed(index, SearchFilters(max_price=4000)))
+    got = np.asarray(module.filter_products(index, SearchFilters(max_price=4000)))
     results.append(check(
         got.tolist() == [True, False, True, True],
-        "allowed: max price 4000 keeps P1, P3, P4",
+        "filter_products: max price 4000 keeps P1, P3, P4",
         f"got {got.tolist()}"))
     filters = SearchFilters(category="sofa", max_price=4000)
-    got = np.asarray(module.allowed(index, filters))
+    got = np.asarray(module.filter_products(index, filters))
     results.append(check(
         got.tolist() == [True, False, False, True],
-        "allowed: sofa and max price 4000 keeps P1 and P4",
+        "filter_products: sofa and max price 4000 keeps P1 and P4",
         f"got {got.tolist()}"))
-    got = np.asarray(module.allowed(index, SearchFilters()))
+    got = np.asarray(module.filter_products(index, SearchFilters()))
     results.append(check(
         got.tolist() == [True, True, True, True],
-        "allowed: no filters keeps all four",
+        "filter_products: no filters keeps all four",
         f"got {got.tolist()}"))
     scores = np.array([0.2, 0.9, 0.1, 0.7, 0.5])
     got = module.top_k(scores, 3)
@@ -137,7 +137,7 @@ def test_functions(module: ModuleType) -> bool:
         True if every test passed.
     """
     try:
-        results = test_normalise(module) + test_allowed_and_top_k(module)
+        results = test_normalise(module) + test_filter_and_top_k(module)
     except Exception as error:  # noqa: BLE001 - show any mistake
         return check(False, "functions run",
                      f"{type(error).__name__}: {error} (still a TODO?)")

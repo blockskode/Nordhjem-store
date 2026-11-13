@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { browseProducts, searchProducts } from './api'
+import { ExplainPanel } from './components/ExplainPanel'
 import { Filters } from './components/Filters'
 import { ProductCard } from './components/ProductCard'
 import { SearchBar } from './components/SearchBar'
@@ -23,6 +24,26 @@ interface SearchInfo {
   asked: number
 }
 
+const EXPLAIN_KEY = 'nordhjem-explain'
+
+/** Read whether Explain was left on last time (false if storage fails). */
+function explainWasOn(): boolean {
+  try {
+    return window.localStorage.getItem(EXPLAIN_KEY) === 'on'
+  } catch {
+    return false
+  }
+}
+
+/** Remember the Explain switch for next time; ignore storage errors. */
+function rememberExplain(on: boolean) {
+  try {
+    window.localStorage.setItem(EXPLAIN_KEY, on ? 'on' : 'off')
+  } catch {
+    // private window or blocked storage: the switch still works
+  }
+}
+
 /** Put the search text in the address bar, or remove it when browsing. */
 function saveQueryInUrl(query: string) {
   const url = query ? `?q=${encodeURIComponent(query)}` : window.location.pathname
@@ -37,6 +58,8 @@ export default function App() {
   const [products, setProducts] = useState<ProductHit[]>([])
   const [total, setTotal] = useState(0) // catalogue size when browsing
   const [searchInfo, setSearchInfo] = useState<SearchInfo>()
+  const [explain, setExplain] = useState(explainWasOn)
+  const [overFilters, setOverFilters] = useState(false) // hovered or focused
 
   /** Show the first page of the catalogue (no search). */
   async function browse(c?: Category, p?: number) {
@@ -122,24 +145,50 @@ export default function App() {
         </section>
 
         <div className="sticky-search">
-          <SearchBar
-            key={query}
-            initial={query}
-            busy={status === 'loading'}
-            onSearch={(q) => search(q, category, maxPrice)}
-          />
-          <Filters
-            category={category}
-            maxPrice={maxPrice}
-            onCategory={(c) => {
-              setCategory(c)
-              refresh(c, maxPrice)
+          <div className="search-row">
+            <SearchBar
+              key={query}
+              initial={query}
+              busy={status === 'loading'}
+              onSearch={(q) => search(q, category, maxPrice)}
+            />
+            <button
+              className={explain ? 'explain-toggle on' : 'explain-toggle'}
+              aria-pressed={explain}
+              title="Show what the page does in code"
+              onClick={() => {
+                rememberExplain(!explain)
+                setExplain(!explain)
+              }}
+            >
+              Explain
+            </button>
+          </div>
+          <div
+            className="filter-zone"
+            onMouseEnter={() => setOverFilters(true)}
+            onMouseLeave={() => setOverFilters(false)}
+            onFocus={() => setOverFilters(true)}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setOverFilters(false)
             }}
-            onMaxPrice={(p) => {
-              setMaxPrice(p)
-              refresh(category, p)
-            }}
-          />
+          >
+            <Filters
+              category={category}
+              maxPrice={maxPrice}
+              onCategory={(c) => {
+                setCategory(c)
+                refresh(c, maxPrice)
+              }}
+              onMaxPrice={(p) => {
+                setMaxPrice(p)
+                refresh(category, p)
+              }}
+            />
+            {explain && overFilters && (
+              <ExplainPanel category={category} maxPrice={maxPrice} />
+            )}
+          </div>
         </div>
 
         {!query && (
