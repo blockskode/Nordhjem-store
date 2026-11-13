@@ -2,7 +2,7 @@
 doc_id: old-furniture-pickup
 title: Old furniture pickup
 topic: delivery
-country: DK
+country: all
 valid_from: 2026-01-01
 ---
 

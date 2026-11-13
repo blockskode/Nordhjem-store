@@ -14,13 +14,27 @@ search, so those come first and as deep as possible.
 
 ## Start here (the exact next action)
 
-**Phase 2, Step 2: RAG over policies** (`PLAN.md`, Step 2). Not
-started. Needs first (Claude, plumbing): about 20 policy documents with
-the traps (old and new version, country differences, a question with
-no answer), a loader that chunks and embeds them into Firestore, an
-evaluation set, then the exercise (`api/rag.py`, owner) with learn PDF,
-check and reference. Design it with the owner first, one piece at a
-time.
+**Phase 2, Step 2: RAG over policies**: the exercise is ready; the owner
+fills `api/rag.py` TODO 1 to 5 one at a time (same way as `search.py`:
+Claude gives the structure, the owner writes, Claude reviews without
+rewriting). Check: `python3 steps/02_rag/check.py`; reference
+`steps/02_rag/solution.py` passes (27/27 retrieved, 27/27 answers, 3/3
+"I don't know"). Learn PDF: `steps/02_rag/learn.pdf`.
+
+Built for Step 2:
+- 23 policy documents in `data/policies/` (header: doc_id, title, topic,
+  country, valid_from, valid_to, replaces), DK, SE, NO, DE; Norway has
+  its own rules (outside the EU). 30 test questions in
+  `data/eval/policy_questions.json`.
+- `loaders/load_policies.py`: 81 chunks (one per `##` heading) in
+  Firestore `policy_chunks`. Rerun after editing a document.
+- Chat on the page: "Ask us" button, dialog in the bottom-right corner,
+  country (remembered) and topic chips; `POST /api/ask`; keyword
+  placeholder (`api/keyword_answer.py`) until `rag.answer` works.
+- Topic chips are a score bonus (0.03), not a filter, so "return pickup
+  in Norway" (in Delivery) still works under Returns.
+- `docs/guides/semantic-search.pdf`: guide to the search code, waiting
+  for the owner's review before commit.
 
 Done (2026-11-13):
 - **Step 1, semantic search**: the owner's `api/search.py` passes

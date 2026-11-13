@@ -2,7 +2,7 @@
 doc_id: stores
 title: Stores and opening hours
 topic: shop
-country: DK, SE, DE
+country: all
 valid_from: 2026-01-01
 ---
 

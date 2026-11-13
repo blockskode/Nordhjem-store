@@ -2,7 +2,7 @@
 doc_id: assembly
 title: Assembly service
 topic: delivery
-country: DK, SE
+country: all
 valid_from: 2026-01-01
 ---
 

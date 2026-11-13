@@ -23,6 +23,8 @@ class Section:
     text: str
     topic: str
     countries: list[str]   # ["all"], or for example ["DK", "SE"]
+    valid_from: str        # "2026-01-01"
+    valid_to: str | None   # the last day it applied, or None if current
 
 
 def read_header(lines: list[str]) -> tuple[dict[str, str], int]:
@@ -63,7 +65,9 @@ def split_sections(header: dict[str, str], body: list[str]) -> list[Section]:
                 sections.append(Section(
                     doc_id=header["doc_id"], title=header["title"],
                     heading=heading, text=text, topic=header["topic"],
-                    countries=countries))
+                    countries=countries,
+                    valid_from=header["valid_from"],
+                    valid_to=header.get("valid_to")))
             heading = line[3:].strip()
             lines = []
         elif not line.startswith("# "):

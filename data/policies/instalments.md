@@ -2,7 +2,7 @@
 doc_id: instalments
 title: Paying in instalments
 topic: payment
-country: DK, SE, DE
+country: all
 valid_from: 2026-01-01
 ---
 
