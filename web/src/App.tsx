@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { browseProducts, searchProducts } from './api'
 import { ExplainPanel } from './components/ExplainPanel'
 import { Filters } from './components/Filters'
+import { SkeletonCard } from './components/SkeletonCard'
 import { ProductCard } from './components/ProductCard'
 import { SearchBar } from './components/SearchBar'
 import { CATEGORY_LABELS, formatPrice } from './format'
@@ -81,11 +82,13 @@ export default function App() {
   const [searchInfo, setSearchInfo] = useState<SearchInfo>()
   const [explain, setExplain] = useState(explainWasOn)
   const [overFilters, setOverFilters] = useState(false) // hovered or focused
+  const [waitingFor, setWaitingFor] = useState('Loading products')
 
   /** Show the first page of the catalogue (no search). */
   async function browse(c?: Category, p?: number) {
     setQuery('')
     saveQueryInUrl('')
+    setWaitingFor('Loading products')
     setStatus('loading')
     try {
       const reply = await browseProducts({
@@ -104,6 +107,7 @@ export default function App() {
   async function search(q: string, c?: Category, p?: number, asked = PAGE_SIZE) {
     setQuery(q)
     saveQueryInUrl(q)
+    setWaitingFor('Reading your words and searching')
     setStatus(asked > PAGE_SIZE ? 'more' : 'loading')
     try {
       const reply = await searchProducts({
@@ -229,7 +233,16 @@ export default function App() {
         )}
 
         <div className="info">
-          {searchInfo ? (
+          {status === 'loading' ? (
+            <span className="waiting" role="status">
+              <span className="dots" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+              {waitingFor}
+            </span>
+          ) : searchInfo ? (
             <span>
               {products.length} results for "{query}" · {searchInfo.tookMs} ms ·{' '}
               {searchInfo.fromWords.length > 0 && (
@@ -249,7 +262,7 @@ export default function App() {
               Showing {products.length} of {total} products
             </span>
           )}
-          {searchInfo && (
+          {searchInfo && status !== 'loading' && (
             <span className="engine" title="Which search code answered">
               {searchInfo.engine}
             </span>
@@ -268,10 +281,12 @@ export default function App() {
           </p>
         )}
 
-        <div className={status === 'loading' ? 'grid dim' : 'grid'}>
-          {products.map((p) => (
-            <ProductCard key={p.product_id} product={p} />
-          ))}
+        <div className="grid">
+          {status === 'loading'
+            ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
+            : products.map((p) => (
+                <ProductCard key={p.product_id} product={p} />
+              ))}
         </div>
 
         {canShowMore && status !== 'error' && (
