@@ -37,6 +37,10 @@ Done (2026-11-13):
   the filters to see `SearchFilters(...)`, a 4-product
   `filter_products` table and the counts on all 500. Add one piece per
   concept the owner covers (next candidate: scores and top-k).
+- **Colour filter** (owner, with fixes): `colour` in `SearchFilters`,
+  `Index.colours`, `filter_products`, `ParsedQuery` and the instruction
+  (green is dark green, navy is blue...). Both checks test it; live.
+  Next idea offered: say on the page when a filter leaves few results.
 - `steps/01_embeddings/notes.pdf`: queries vs documents, what the score
   means, where filters come from (Latin Modern, thesis style).
 
